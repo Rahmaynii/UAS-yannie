@@ -15,6 +15,7 @@
       <div class="search-bar">
         <input type="text" v-model="city" placeholder="Masukkan kota" required class="form-control" />
         <button @click="fetchWeatherData" class="btn btn-primary">Cari</button>
+        <button @click="fetchWeatherDataByLocation" class="btn btn-primary">Cek Lokasi</button>
         <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
       </div>
     </div>
@@ -51,6 +52,30 @@ export default {
           this.errorMessage = 'Error fetching weather data. Please try again later.';
         });
     },
+    fetchWeatherDataByLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          const API_KEY = '1e5de52e77c26fbe944232c835ecf744';
+          const API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`;
+
+          fetch(API_URL)
+            .then(response => response.json())
+            .then(data => {
+              this.weatherData = data;
+              this.errorMessage = null;
+            })
+            .catch(error => {
+              console.error('Error fetching weather data:', error);
+              this.weatherData = null;
+              this.errorMessage = 'Error fetching weather data. Please try again later.';
+            });
+        });
+      } else {
+        this.errorMessage = 'Geolocation is not supported by your browser.';
+      }
+    },
     getWeatherIconUrl(iconCode) {
       return `https://openweathermap.org/img/wn/${iconCode}.png`;
     },
@@ -62,19 +87,19 @@ export default {
 .weather-container {
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Updated: align to the top */
-  min-height: 100vh; /* Updated: min-height instead of height */
+  align-items: flex-start;
+  min-height: 100vh;
   background-size: cover;
   background-position: center;
   font-family: Arial, sans-serif;
 }
 
 .weather {
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
-  padding: 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  display: inline-block;
+    border: 1px solid black;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
 }
 
 .title {
@@ -113,15 +138,18 @@ img.weather-icon {
 }
 
 input[type="text"] {
-  padding: 8px;
-  border: 1px solid #ccc;
+  padding: 8px 16px;
+  border: 10px solid black;
+  background-color: black;
+  color: black; /* Added: Text color */
   border-radius: 4px;
   margin-right: 8px;
+  margin-bottom: 50px;
 }
 
 button {
   padding: 8px 16px;
-  background-color: #007bff;
+  background-color: #c0ae8c;
   color: #fff;
   border: none;
   border-radius: 4px;
