@@ -21,7 +21,6 @@
     <p class="message">{{ message }}</p>
   </div>
 </template>
-
 <script>
 export default {
   name: 'TicTacToe',
@@ -98,7 +97,6 @@ export default {
   }
 };
 </script>
-
 <style>
 .tic-tac-toe {
   text-align: center;
@@ -133,6 +131,13 @@ export default {
   justify-content: center;
   font-size: 24px;
   cursor: pointer;
+  background-color: #fff; /* Warna latar belakang sel */
+  color: #000; /* Warna teks sel */
+}
+
+.cell:nth-child(2n) {
+  background-color: #000; /* Warna latar belakang sel ganjil */
+  color: #fff; /* Warna teks sel ganjil */
 }
 
 .reset-container {
@@ -154,4 +159,5 @@ button {
   font-size: 18px;
   font-weight: bold;
 }
+
 </style>
