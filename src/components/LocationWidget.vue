@@ -1,177 +1,113 @@
 <template>
-  <div class="location-widget">
-    <div class="location-border">
-      <h2>Your Location</h2>
-      <div v-if="latitude && longitude">
-        <p>Latitude: {{ latitude }}</p>
-        <p>Longitude: {{ longitude }}</p>
-      </div>
-      <div v-else>
-        <p>Finding your location...</p>
-      </div>
-
-      <div class="location-input">
-        <label for="latitude">Latitude:</label>
-        <input type="text" id="latitude" v-model="inputLatitude" />
-      </div>
-      <div class="location-input">
-        <label for="longitude">Longitude:</label>
-        <input type="text" id="longitude" v-model="inputLongitude" />
-      </div>
-
-      <button @click="fetchLocationDetails">Find Location Details</button>
-
-      <div v-if="foundLocation" class="location-details">
-        <h3>Location Details</h3>
-        <p>{{ foundLocation.components.country }}</p>
-        <p>{{ foundLocation.components.city }}</p>
-        <p>{{ foundLocation.components.street }}</p>
-        <p>Postal Code: {{ foundLocation.components.postcode }}</p>
-      </div>
+  <div class="location">
+    <h1>Lokasi</h1>
+    <div v-if="locationData">
+      <p>Latitude: {{ locationData.latitude }}</p>
+      <p>Longitude: {{ locationData.longitude }}</p>
+      <p>Alamat: {{ locationData.address }}</p>
     </div>
+    <div v-else>
+      <p>Loading...</p>
+    </div>
+    <button @click="fetchLocationData" class="btn-refresh">Refresh Lokasi</button>
+    <div id="map"></div>
   </div>
 </template>
 
 <script>
 export default {
+  name: 'Location',
   data() {
     return {
-      latitude: null,
-      longitude: null,
-      inputLatitude: '',
-      inputLongitude: '',
-      foundLocation: null,
+      locationData: null,
     };
   },
   mounted() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(this.getPosition);
-    }
+    this.fetchLocationData();
   },
   methods: {
-    getPosition(position) {
-      this.latitude = position.coords.latitude;
-      this.longitude = position.coords.longitude;
-    },
-    async fetchLocationDetails() {
+    async fetchLocationData() {
       try {
-        const apiKey = '92591005a7b94008909d59a64b6d2a49';
-        const latitude = this.inputLatitude || this.latitude;
-        const longitude = this.inputLongitude || this.longitude;
-        const apiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
-          latitude + ',' + longitude
-        )}&key=${apiKey}`;
+        if (navigator.geolocation) {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+          });
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
 
-        const response = await fetch(apiUrl);
-        const data = await response.json();
+          const apiKey = '92591005a7b94008909d59a64b6d2a49';
+          const apiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+            latitude + ',' + longitude
+          )}&key=${apiKey}`;
 
-        if (data.results && data.results.length > 0) {
-          const location = data.results[0];
-          this.foundLocation = location;
-          console.log('Location:', location);
-          // Lakukan sesuatu dengan data lokasi yang ditemukan
+          const response = await fetch(apiUrl);
+          const data = await response.json();
+
+          this.locationData = {
+            latitude,
+            longitude,
+            address: data.results[0].formatted,
+          };
+
+          this.displayMap(latitude, longitude);
+        } else {
+          console.error('Geolocation is not supported by this browser.');
         }
       } catch (error) {
         console.error('Error fetching location data:', error);
       }
     },
+    displayMap(latitude, longitude) {
+      const mapOptions = {
+        center: { lat: latitude, lng: longitude },
+        zoom: 10,
+      };
+      const mapElement = document.getElementById('map');
+      const map = new google.maps.Map(mapElement, mapOptions);
+
+      const marker = new google.maps.Marker({
+        position: { lat: latitude, lng: longitude },
+        map: map,
+      });
+    },
   },
 };
 </script>
 
-<style scoped>
-.location-widget {
-  padding: 20px;
-  margin-bottom: 20px;
+<style>
+.location {
   text-align: center;
+  color: black;
+  width: 450px;
+  height: 200px;
+  margin: 0 auto;
+  border: 1px solid black;
 }
 
-.location-border {
-  border: 2px solid #000;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.location h1 {
+  color: black; /* Mengubah warna font menjadi hitam */
 }
 
-.location-widget h2 {
-  color: #333;
-  font-size: 24px;
-  margin-bottom: 20px;
+.location p {
+  color: black; /* Mengubah warna font menjadi hitam */
 }
 
-.location-widget p {
-  color: #666;
-}
-
-.location-input {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.location-input label {
-  display: block;
-  margin-bottom: 5px;
-  color: #333;
-  font-size: 16px;
-}
-
-.location-input input {
-  width: 200px;
-  padding: 10px;
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-.location-input button {
-  margin-top: 20px;
+.btn-refresh {
   padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
+  background-color: #c0ae8c;
+  color: #fff;
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.location-input button:hover {
-  background-color: #45a049;
-}
-
-.location-input button:disabled {
-  background-color: #ccc;
-  color: #999;
-  cursor: not-allowed;
-}
-
-.location-details {
   margin-top: 20px;
-  text-align: left;
 }
 
-.location-details-box {
-  padding: 20px;
-  border: 2px solid #000;
-  border-radius: 4px;
+.btn-refresh:hover {
+  background-color: #c0ae8c;
 }
 
-.location-details h3 {
-  margin-bottom: 10px;
-  color: #333;
-  font-size: 18px;
-}
-
-.location-details p {
-  margin: 5px 0;
-  color: #666;
-}
-
-.error-message {
-  color: red;
-  margin-top: 10px;
+#map {
+  height: 400px;
+  width: 100%;
+  margin-top: 20px;
 }
 </style>
