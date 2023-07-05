@@ -117,7 +117,7 @@
   
   .kalender {
     display: inline-block;
-    border: 1px solid #ccc;
+    border: 1px solid black;
     border-radius: 6px;
     padding: 10px;
   }
