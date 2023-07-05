@@ -41,7 +41,7 @@
   
   <style scoped>
   .photo-widget {
-    border: 1px solid #ccc;
+    border: 1px solid black;
     padding: 20px;
     margin-bottom: 20px;
     display: flex;
@@ -64,6 +64,11 @@
   }
   
   .photo-widget button {
-    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #c0ae8c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
   }
   </style>
