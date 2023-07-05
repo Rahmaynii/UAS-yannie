@@ -44,14 +44,10 @@
   
   <style scoped>
   .bingkai {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: 2px solid #333;
+    display: inline-block;
+    border: 1px solid black;
     border-radius: 6px;
-    padding: 8px;
-    background-color: transparent;
+    padding: 10px;
   }
   
   .bingkai h2 {
