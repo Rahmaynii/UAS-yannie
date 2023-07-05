@@ -68,6 +68,7 @@ export default {
   flex-direction: column;
   align-items: center;
   height: 100vh;
+  margin-bottom: 10px;
 }
 
 .buttons {
@@ -85,17 +86,17 @@ button {
 }
 
 .start-button {
-  background-color: #28a745;
+  background-color: #c0ae8c;
   color: #fff;
 }
 
 .start-button:disabled {
-  background-color: #73c6b6;
+  background-color: #ccb17f;
   cursor: not-allowed;
 }
 
 .start-button:hover:not(:disabled) {
-  background-color: #218838;
+  background-color: #c0ae8c;
 }
 
 .stop-button {
@@ -113,12 +114,12 @@ button {
 }
 
 .reset-button {
-  background-color: #ffc107;
-  color: #212529;
+  background-color: #c0ae8c;
+  color: white;
 }
 
 .reset-button:hover {
-  background-color: #e0a800;
+  background-color: #c0ae8c;
 }
 
 .stopwatch {
